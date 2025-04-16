@@ -8,11 +8,10 @@ from utils import genera_commento_ai, crea_grafico
 st.set_page_config(page_title="AI Report Assistant", layout="wide")
 st.title("🤖 AI Report Assistant")
 
-# === Config ===
+# === Tracciamento utilizzi ===
 USER_TRACK_FILE = "user_tracker.json"
-CODICE_PERSONALE = "KULO-KULO"
+ACCESS_CODE = "KULO-KULO"
 
-# === Funzioni per tracciamento ===
 def load_tracker():
     if not os.path.exists(USER_TRACK_FILE):
         with open(USER_TRACK_FILE, "w") as f:
@@ -24,22 +23,18 @@ def save_tracker(tracker):
     with open(USER_TRACK_FILE, "w") as f:
         json.dump(tracker, f)
 
-# === Accesso utente ===
+# === Login utente ===
 st.sidebar.header("🔑 Accesso utente")
-user_email = st.sidebar.text_input("Inserisci la tua email o codice personale")
+user_input = st.sidebar.text_input("Inserisci il tuo codice o la tua email")
 
-if user_email:
+if user_input:
     tracker = load_tracker()
+    is_access_code = user_input == ACCESS_CODE
+    utilizzi = tracker.get(user_input, 0)
 
-    # Controllo se ha inserito il codice segreto
-    if user_email == CODICE_PERSONALE:
-        st.success("🎉 Accesso illimitato attivato! Bentornato capo 👑")
-        utilizzi = -1  # codice speciale per uso illimitato
-    else:
-        utilizzi = tracker.get(user_email, 0)
-        if utilizzi >= 5:
-            st.error("❌ Hai raggiunto il limite di 5 utilizzi gratuiti. Contattaci per sbloccare l'accesso completo.")
-            st.stop()
+    if not is_access_code and utilizzi >= 5:
+        st.error("Hai raggiunto il limite di 5 utilizzi gratuiti. Contattaci per sbloccare l'accesso completo.")
+        st.stop()
 
     file = st.file_uploader("📂 Carica un file CSV", type="csv")
 
@@ -59,9 +54,20 @@ if user_email:
             fig = crea_grafico(df, colonna)
             st.plotly_chart(fig)
 
-            if utilizzi != -1:
-                tracker[user_email] = utilizzi + 1
+            # === Se non è un codice, aggiorna l'utilizzo
+            if not is_access_code:
+                tracker[user_input] = utilizzi + 1
                 save_tracker(tracker)
+
+            # === Download dati
+            with st.expander("📄 Dati analizzati"):
+                st.dataframe(df)
+                st.download_button(
+                    label="📥 Scarica CSV",
+                    data=df.to_csv(index=False),
+                    file_name="dati_analizzati.csv",
+                    mime="text/csv"
+                )
 else:
-    st.info("Per favore inserisci la tua email o codice nella sidebar per iniziare.")
+    st.info("Per favore inserisci la tua email o il tuo codice nella sidebar per iniziare.")
         
