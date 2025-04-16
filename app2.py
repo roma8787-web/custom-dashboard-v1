@@ -8,9 +8,11 @@ from utils import genera_commento_ai, crea_grafico
 st.set_page_config(page_title="AI Report Assistant", layout="wide")
 st.title("🤖 AI Report Assistant")
 
-# === Tracciamento utilizzi ===
+# === Config ===
 USER_TRACK_FILE = "user_tracker.json"
+CODICE_PERSONALE = "KULO-KULO"
 
+# === Funzioni per tracciamento ===
 def load_tracker():
     if not os.path.exists(USER_TRACK_FILE):
         with open(USER_TRACK_FILE, "w") as f:
@@ -22,17 +24,22 @@ def save_tracker(tracker):
     with open(USER_TRACK_FILE, "w") as f:
         json.dump(tracker, f)
 
-# === Login utente ===
+# === Accesso utente ===
 st.sidebar.header("🔑 Accesso utente")
-user_email = st.sidebar.text_input("Inserisci la tua email per usare l'app")
+user_email = st.sidebar.text_input("Inserisci la tua email o codice personale")
 
 if user_email:
     tracker = load_tracker()
-    utilizzi = tracker.get(user_email, 0)
 
-    if utilizzi >= 5:
-        st.error("Hai raggiunto il limite di 5 utilizzi gratuiti. Contattaci per sbloccare l'accesso completo.")
-        st.stop()
+    # Controllo se ha inserito il codice segreto
+    if user_email == CODICE_PERSONALE:
+        st.success("🎉 Accesso illimitato attivato! Bentornato capo 👑")
+        utilizzi = -1  # codice speciale per uso illimitato
+    else:
+        utilizzi = tracker.get(user_email, 0)
+        if utilizzi >= 5:
+            st.error("❌ Hai raggiunto il limite di 5 utilizzi gratuiti. Contattaci per sbloccare l'accesso completo.")
+            st.stop()
 
     file = st.file_uploader("📂 Carica un file CSV", type="csv")
 
@@ -52,9 +59,9 @@ if user_email:
             fig = crea_grafico(df, colonna)
             st.plotly_chart(fig)
 
-            # Aggiorna numero di utilizzi
-            tracker[user_email] = utilizzi + 1
-            save_tracker(tracker)
+            if utilizzi != -1:
+                tracker[user_email] = utilizzi + 1
+                save_tracker(tracker)
 else:
-    st.info("Per favore inserisci la tua email nella sidebar per iniziare.")
+    st.info("Per favore inserisci la tua email o codice nella sidebar per iniziare.")
         
