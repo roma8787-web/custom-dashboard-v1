@@ -6,7 +6,8 @@ from datetime import datetime
 st.set_page_config(page_title="Custom Dashboard v1", layout="wide")
 
 # === Caricamento dati ===
-file_path = "dati_clienti_50.csv"
+import os
+file_path = os.path.join(os.path.dirname(__file__), "dati_clienti_50.csv")
 dati = pd.read_csv(file_path)
 
 # === Pulizia ===
