@@ -6,7 +6,7 @@ import os
 from utils import genera_commento_ai, crea_grafico
 
 st.set_page_config(page_title="AI Report Assistant", layout="wide")
-st.title("🤖 AI Report Assistant")
+st.title("🤖 insight-analyzer")
 
 # === Tracciamento utilizzi ===
 USER_TRACK_FILE = "user_tracker.json"
