@@ -3,8 +3,8 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime
 
-st.set_page_config(page_title="Custom Dashboard v1", layout="wide")
-st.title("📊 Custom Dashboard v1")
+st.set_page_config(page_title="insight_analyzer", layout="wide")
+st.title("📊 insight_analyzer")
 
 # === Caricamento file CSV personalizzato ===
 file = st.file_uploader("📂 Carica un file CSV", type="csv")
