@@ -5,7 +5,7 @@ import json
 import os
 from utils import genera_commento_ai, crea_grafico
 
-st.set_page_config(page_title="AI Report Assistant", layout="wide")
+st.set_page_config(page_title="🤖 insight-analyzer", layout="wide")
 st.title("🤖 insight-analyzer")
 
 # === Tracciamento utilizzi ===
